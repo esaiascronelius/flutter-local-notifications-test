@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications_test/notification_service.dart';
 
 import 'background_service.dart';
 
 void main() {
   initializeBackgroundService();
+
   runApp(const MyApp());
 }
 
@@ -52,16 +54,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  late final NotificationService notificationService;
 
-  void _incrementCounter() {
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    notificationService.initializePlatformNotifications();
+    super.initState();
+  }
+
+  void _incrementCounter() async {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
+
+    await notificationService.showLocalNotification(
+      id: 0,
+      title: 'This is working!',
+      body: 'Wow! This is actually working right now!?!?!',
+      payload: 'You just sent a notification!!!',
+    );
   }
 
   @override
