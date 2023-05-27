@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'background_service.dart';
+
 void main() {
+  initializeBackgroundService();
   runApp(const MyApp());
 }
 
