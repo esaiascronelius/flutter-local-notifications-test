@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications_test/notification_service.dart';
 
 import 'background_service.dart';
 
 void main() {
-  initializeBackgroundService();
-
+  initBackgroundServices();
   runApp(const MyApp());
 }
 
@@ -54,12 +52,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  late final NotificationService notificationService;
 
   @override
   void initState() {
-    notificationService = NotificationService();
-    notificationService.initializePlatformNotifications();
     super.initState();
   }
 
@@ -67,13 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
-
-    await notificationService.showLocalNotification(
-      id: 0,
-      title: 'This is working!',
-      body: 'Wow! This is actually working right now!?!?!',
-      payload: 'You just sent a notification!!!',
-    );
   }
 
   @override

@@ -1,52 +1,35 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'package:flutter_local_notifications_test/push_notifications.dart';
+import 'package:workmanager/workmanager.dart';
 
-final service = FlutterBackgroundService();
-
-initializeBackgroundService() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-        onStart: onStart, autoStart: true, isForegroundMode: true),
-    iosConfiguration: IosConfiguration(
-      autoStart: true,
-      onForeground: onStart,
-    ),
-  );
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  print('Native called background task');
+  Workmanager().executeTask((taskName, inputData) async {
+    switch (taskName) {
+      case 'push-notifications':
+        await fetchNotifications();
+        break;
+      default:
+        print('Unknown task $taskName');
+    }
+    return Future.value(true);
+  });
 }
 
-onStart(ServiceInstance service) async {
-  DartPluginRegistrant.ensureInitialized();
+void initBackgroundServices() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
 
-  if (service is AndroidServiceInstance) {
-    service.on('setAsForeground').listen((event) {
-      service.setAsForegroundService();
-    });
-
-    service.on('setAsBackground').listen((event) {
-      service.setAsBackgroundService();
-    });
-  }
-
-  service.on('stopService').listen((event) {
-    service.stopSelf();
-  });
-
-  Timer.periodic(const Duration(seconds: 10), (timer) async {
-    if (service is AndroidServiceInstance) {
-      service.setForegroundNotificationInfo(
-        title: 'App in background...',
-        content: 'Update ${DateTime.now()}',
-      );
-    }
-
-    service.invoke('update', {
-      'current_date': DateTime.now().toIso8601String(),
-    });
-  });
+  Workmanager().registerPeriodicTask(
+    'push-notifications',
+    'push-notifications',
+    frequency: const Duration(seconds: 5),
+    initialDelay: const Duration(seconds: 5),
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+    ),
+  );
 }
