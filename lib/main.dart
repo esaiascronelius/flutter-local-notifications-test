@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications_test/push_notifications.dart';
 
-import 'background_service.dart';
+import './notifications/background_service.dart';
+import './notifications/push_notifications.dart';
 
 void main() {
   initBackgroundServices();

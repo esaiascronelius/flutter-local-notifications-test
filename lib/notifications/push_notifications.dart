@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter_local_notifications_test/http.dart';
-import 'package:flutter_local_notifications_test/notification.dart';
-import 'package:flutter_local_notifications_test/notification_service.dart';
-import 'package:flutter_local_notifications_test/storage.dart';
+import 'http.dart';
+import 'notification.dart';
+import 'notification_config.dart';
+import 'notification_service.dart';
+import 'storage.dart';
 
 /// Fetches notifications from the server and displays new ones.
 Future<void> fetchNotifications() async {
@@ -75,7 +76,7 @@ Future<NotificationService> _initializeNotificationService() async {
 
 /// Fetches notifications from the server.
 Future<List<Notification>> _getNotifications() async {
-  final response = await Http.get('https://pastebin.com/raw/f3A3RMKw', {});
+  final response = await Http.get(pushNotificationsRestApi, {});
 
   if (response.statusCode != 200) {
     throw Exception('Failed to load notifications');

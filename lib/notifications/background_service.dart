@@ -1,27 +1,31 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications_test/push_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 
+import 'notification_config.dart';
+import 'push_notifications.dart';
+
+/// Callback dispatcher for background services.
 @pragma('vm:entry-point')
 void callbackDispatcher() {
-  print('Native called background task');
   Workmanager().executeTask((taskName, inputData) async {
     switch (taskName) {
       case 'push-notifications':
         await fetchNotifications();
         break;
-      default:
-        print('Unknown task $taskName');
     }
     return Future.value(true);
   });
 }
 
+/// Initializes background services.
 void initBackgroundServices() {
   WidgetsFlutterBinding.ensureInitialized();
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: pushNotificationsServiceDebugMode,
+  );
 
   Workmanager().registerPeriodicTask(
     'push-notifications',

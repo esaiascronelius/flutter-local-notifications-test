@@ -1,25 +1,27 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/subjects.dart';
 
+import 'notification_config.dart';
+
 class NotificationService {
   NotificationService();
 
   final _localNotifications = FlutterLocalNotificationsPlugin();
   final BehaviorSubject<String> behaviorSubject = BehaviorSubject();
 
+  /// Initializes the notification service.
   Future<void> initializePlatformNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings(pushNotificationsAndroidDefaultIcon);
 
-    final DarwinInitializationSettings initializationSettingsDarwin =
+    const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+      requestAlertPermission: pushNotificationsIosRequestAlertPermission,
+      requestBadgePermission: pushNotificationsIosRequestBadgePermission,
+      requestSoundPermission: pushNotificationsIosRequestSoundPermission,
     );
 
-    final InitializationSettings initializationSettings =
+    const InitializationSettings initializationSettings =
         InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
@@ -28,27 +30,25 @@ class NotificationService {
     await _localNotifications.initialize(initializationSettings);
   }
 
-  void onDidReceiveLocalNotification(
-      int id, String? title, String? body, String? payload) {
-    print('id $id');
-  }
-
+  /// Gets the notification platform details.
   Future<NotificationDetails> _notificationDetails() async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         const AndroidNotificationDetails(
-      'channel_id',
-      'channel_name',
-      groupKey: 'com.example.app',
-      channelDescription: 'channel_description',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      ticker: 'ticker',
+      pushNotificationsAndroidChannelId,
+      pushNotificationsAndroidChannelName,
+      groupKey: pushNotificationsAndroidChannelGroup,
+      channelDescription: pushNotificationsAndroidChannelDescription,
+      importance: pushNotificationsAndroidImportance,
+      priority: pushNotificationsAndroidPriority,
+      playSound: pushNotificationsAndroidPlaySound,
+      ticker: pushNotificationsAndroidTicker,
     );
 
     DarwinNotificationDetails darwinNotificationDetails =
         const DarwinNotificationDetails(
-      threadIdentifier: 'thread1',
+      presentAlert: pushNotificationsIosPresentAlert,
+      sound: pushNotificationsIosSound,
+      threadIdentifier: pushNotificationsIosThreadIdentifier,
     );
 
     final details = await _localNotifications.getNotificationAppLaunchDetails();
@@ -64,6 +64,7 @@ class NotificationService {
     return platformChannelSpecifics;
   }
 
+  /// Shows a local notification.
   Future<void> showLocalNotification({
     required int id,
     required String title,
@@ -71,7 +72,13 @@ class NotificationService {
     required String payload,
   }) async {
     final platformChannelSpecifics = await _notificationDetails();
-    await _localNotifications.show(id, title, body, platformChannelSpecifics,
-        payload: payload);
+
+    await _localNotifications.show(
+      id,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: payload,
+    );
   }
 }
