@@ -16,6 +16,7 @@ Future<void> fetchNotifications() async {
 
     // First time running the app.
     if (lastShownNotificationIdStr == null) {
+      print('First time running the app. Displaying no notifications.');
       return await _setLastShownNotificationId(notifications);
     }
 
@@ -46,7 +47,8 @@ Future<void> _showNotifications(
       await _initializeNotificationService();
 
   for (final notification in notifications) {
-    if (notification.id > lastShownNotificationId) {
+    if (notification.id > lastShownNotificationId || true) {
+      print('Displaying notification: ${notification.id}');
       await _showNotification(notificationService, notification);
     }
   }

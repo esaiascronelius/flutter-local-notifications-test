@@ -22,9 +22,9 @@ const Priority pushNotificationsAndroidPriority =
 const bool pushNotificationsAndroidPlaySound = true; // Android only.
 const String pushNotificationsAndroidTicker = 'ticker'; // Android only.
 
-const bool pushNotificationsIosRequestAlertPermission = false; // iOS only.
-const bool pushNotificationsIosRequestBadgePermission = false; // iOS only.
-const bool pushNotificationsIosRequestSoundPermission = false; // iOS only.
+const bool pushNotificationsIosRequestAlertPermission = true; // iOS only.
+const bool pushNotificationsIosRequestBadgePermission = true; // iOS only.
+const bool pushNotificationsIosRequestSoundPermission = true; // iOS only.
 const bool pushNotificationsIosPresentAlert = true; // iOS only.
 const String? pushNotificationsIosSound = null; // iOS only.
 const String pushNotificationsIosThreadIdentifier = 'thread1'; // iOS only.
